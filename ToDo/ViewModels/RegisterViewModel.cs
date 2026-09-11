@@ -22,6 +22,7 @@ namespace ToDo.ViewModels
         {
             _context = new AppDbContext();
             _context.Database.CreateIfNotExists();
+
             RegisterCommand = new LambdaCommand(OnRegisterCommandExecuted, CanRegisterCommandExecute);
             CancelCommand = new LambdaCommand(OnCancelCommandExecuted);
             GoToLoginCommand = new LambdaCommand(OnGoToLoginCommandExecuted);
