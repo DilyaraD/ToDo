@@ -51,10 +51,17 @@ namespace ToDo.ViewModels
         }
 
         private string _statusMessage;
-        public string StatusMessage 
-        { 
-            get => _statusMessage; 
-            set => Set(ref _statusMessage, value); 
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set => Set(ref _statusMessage, value);
+        }
+
+        private string _statusColor = "Red";
+        public string StatusColor
+        {
+            get => _statusColor;
+            set => Set(ref _statusColor, value);
         }
 
         private bool CanLoginCommandExecute(object p) => !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
@@ -66,15 +73,16 @@ namespace ToDo.ViewModels
                 var user = db.Profiles.FirstOrDefault(u => u.Email == Email);
                 if (user == null || !BCrypt.Net.BCrypt.Verify(Password, user.Password))
                 {
-                    StatusMessage = "Неверный email или пароль";
+                    StatusMessage = "Incorrect email or password!";
+                    StatusColor = "Red";
                     return;
                 }
 
                 CurrentUser.Profile = user;
                 var main = new MainWindow();
                 main.Show();
-
-                if (p is Window w) w.Close();
+                var log = new Login();
+                log.Close();
             }
         }
     }

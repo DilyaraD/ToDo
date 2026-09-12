@@ -24,7 +24,6 @@ namespace ToDo.ViewModels
             _context.Database.CreateIfNotExists();
 
             RegisterCommand = new LambdaCommand(OnRegisterCommandExecuted, CanRegisterCommandExecute);
-            CancelCommand = new LambdaCommand(OnCancelCommandExecuted);
             GoToLoginCommand = new LambdaCommand(OnGoToLoginCommandExecuted);
         }
 
@@ -90,7 +89,6 @@ namespace ToDo.ViewModels
 
         #region Команды
         public ICommand RegisterCommand { get; }
-        public ICommand CancelCommand { get; }
         public ICommand GoToLoginCommand { get; }
 
         #endregion
@@ -199,25 +197,18 @@ namespace ToDo.ViewModels
             return regex.IsMatch(email);
         }
 
-        private void OnCancelCommandExecuted(object p)
-        {
-            if (p is Window window)
-            {
-                window.DialogResult = false;
-                window.Close();
-            }
-        }
-
         private void OnGoToLoginCommandExecuted(object p)
         {
-            if (p is Window window)
-            {
-                window.DialogResult = false;
-                window.Close();
-            }
-
             var loginWindow = new Login();
             loginWindow.Show();
+
+            foreach (Window w in Application.Current.Windows)
+            {
+                if (w != loginWindow && !(w is MainWindow))
+                {
+                    w.Close();
+                }
+            }
         }
     }
 }

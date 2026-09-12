@@ -3,9 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:nm="clr-namespace:ToDo.ViewModels"
         xmlns:local="clr-namespace:ToDo.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <nm:MainViewModel />
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -22,7 +26,7 @@
 
             <TextBlock Grid.Column="0" Text="📋 My tasks" FontSize="24" FontWeight="Bold"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <Button Content="Profile" Margin="0,0,10,0" />
+                <Button Content="Profile" Margin="0,0,10,0" Command="{Binding GoToProfileCommand}"/>
                 <Button Content="Log out" />
             </StackPanel>
         </Grid>
@@ -43,7 +47,7 @@
 
                 <ComboBox Grid.Column="2" Margin="0,0,10,0" FontSize="14"/>
 
-                <Button Grid.Column="3" Content="Reset" FontSize="13"/>
+                <Button Grid.Column="3" Margin="0,0,10,0" Content="Reset" FontSize="13"/>
             </Grid>
         </Grid>
 
@@ -57,15 +61,15 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Название" Width="*" />
+                <DataGridTextColumn Header="Title" Width="*" />
 
-                <DataGridTextColumn Header="Категория" Width="120" />
+                <DataGridTextColumn Header="Category" Width="120" />
 
-                <DataGridTextColumn Header="Приоритет" Width="100" />
+                <DataGridTextColumn Header="Property" Width="100" />
 
-                <DataGridTextColumn Header="Срок" Width="120" />
+                <DataGridTextColumn Header="DueDate" Width="120" />
 
-                <DataGridTemplateColumn Header="Действия" Width="130">
+                <DataGridTemplateColumn Header="Action" Width="130">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -91,7 +95,7 @@
                     <TextBlock Text="uu" FontSize="13" VerticalAlignment="Center"/>
                 </StackPanel>
 
-                <Button Grid.Column="1" Content="Добавить задачу" Margin="5"/>
+                <Button Grid.Column="1" Content="Add task" Margin="5" Command="{Binding GoToAddTaskCommand}"/>
             </Grid>
         </Grid>
     </Grid>
