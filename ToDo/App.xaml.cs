@@ -1,17 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
+using ToDo.Data;
 
 namespace ToDo
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            SQLitePCL.Batteries_V2.Init();
+
+            var dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ToDo.db");
+            if (File.Exists(dbPath) && new FileInfo(dbPath).Length == 0)
+            {
+                File.Delete(dbPath);
+            }
+
+            using (var db = new AppDbContext())
+            {
+                db.Database.Initialize(force: true);
+            }
+        }
     }
 }

@@ -12,6 +12,6 @@ namespace ToDo.Models
         public string Login { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public virtual UserTask UserTasks { get; set; }
+        public virtual ICollection<UserTask> UserTasks { get; set; } = new List<UserTask>();
     }
 }
