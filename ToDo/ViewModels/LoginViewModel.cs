@@ -27,13 +27,29 @@ namespace ToDo.ViewModels
         private void OnGoToRegisterCommandExecuted(object p)
         {
             var registerWindow = new RegisterWindow();
-            registerWindow.ShowDialog();
+            registerWindow.Show();
+
+            foreach (Window w in Application.Current.Windows)
+            {
+                if (w != registerWindow && !(w is MainWindow))
+                {
+                    w.Close();
+                }
+            }
         }
 
         private void OnGoToCodeCommandExecuted(object p)
         {
             var codeWindow = new CodeWindow();
-            codeWindow.ShowDialog();
+            codeWindow.Show();
+
+            foreach (Window w in Application.Current.Windows)
+            {
+                if (w != codeWindow && !(w is MainWindow))
+                {
+                    w.Close();
+                }
+            }
         }
 
         private string _email;
