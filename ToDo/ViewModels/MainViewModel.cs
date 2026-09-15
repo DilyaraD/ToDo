@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using ToDo.Data;
 using ToDo.Infastructure.Commands;
+using ToDo.Services;
 using ToDo.ViewModels.Base;
 using ToDo.Views;
 
@@ -14,45 +15,23 @@ namespace ToDo.ViewModels
 {
     public class MainViewModel : ViewModel
     {
-        private readonly AppDbContext _context;
+        private readonly LoginService _loginService = new LoginService();
+        private readonly NavigationService _navigation = new NavigationService();
         public MainViewModel()
         {
-            _context = new AppDbContext();
-            {
-                GoToProfileCommand = new LambdaCommand(OnGoToProfileCommandExecuted);
-                GoToAddTaskCommand = new LambdaCommand(OnGoToAddTaskCommandExecuted);
-            }
+            GoToProfileCommand = new LambdaCommand(_=> _navigation.NavigateToProfile());
+            GoToAddTaskCommand = new LambdaCommand(_ => _navigation.NavigateToAddTask());
+            LogoutCommand = new LambdaCommand(_ => Logout());
         }
 
         public ICommand GoToProfileCommand { get; }
         public ICommand GoToAddTaskCommand { get; }
+        public ICommand LogoutCommand { get; }
 
-        private void OnGoToProfileCommandExecuted(object p)
+        private void Logout()
         {
-            var prof = new SettingWindow();
-            prof.Show();
-
-            foreach (Window w in Application.Current.Windows)
-            {
-                if (w != prof && !(w is MainWindow))
-                {
-                    w.Close();
-                }
-            }
-        }
-
-        private void OnGoToAddTaskCommandExecuted(object p)
-        { 
-            var addT = new AddEditTaskWindow();
-            addT.Show();
-
-            foreach (Window w in Application.Current.Windows)
-            {
-                if (w != addT && !(w is MainWindow))
-                {
-                    w.Close();
-                }
-            }
+            _loginService.Logout();
+            _navigation.NavigateToLogin();
         }
     }
 }

@@ -6,14 +6,15 @@
         xmlns:nm="clr-namespace:ToDo.ViewModels"
         xmlns:local="clr-namespace:ToDo.Views"
         mc:Ignorable="d"
-        Title="SettingWindow"   Height="320" Width="700" WindowStartupLocation="CenterScreen"
-        MaxHeight="400" MaxWidth="750" MinHeight="300" MinWidth="650">
+        Title="SettingWindow"   Height="340" Width="700" WindowStartupLocation="CenterScreen"
+        MaxHeight="420" MaxWidth="750" MinHeight="320" MinWidth="650">
     <Window.DataContext>
         <nm:SettingViewModel />
     </Window.DataContext>
     <Grid>
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -31,20 +32,26 @@
                    Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3"/>
 
             <Label Content="Login" Margin="5" Grid.Row="1" Grid.Column="1"/>
-            <TextBlock Text="tt" FontSize="14" Grid.Row="1" Grid.Column="1" Height="30" VerticalAlignment="Bottom" />
+            <TextBlock Text="{Binding Login}" FontSize="14" Grid.Row="1" Grid.Column="1" Height="30" VerticalAlignment="Bottom" />
 
             <Label Content="New Password" Margin="5" Grid.Row="1" Grid.Column="3"/>
-            <TextBox  x:Name="NewPasswordBox" Grid.Row="1" Grid.Column="3" Height="30" VerticalAlignment="Bottom" />
+            <TextBox Text="{Binding NewPassword, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="3" Height="30" 
+                     VerticalAlignment="Bottom" />
 
             <Label Content="Current Password"  Margin="5" Grid.Row="2" Grid.Column="1"/>
-            <TextBox  Grid.Row="2" Grid.Column="1" x:Name="CurrentPasswordBox" Height="30" VerticalAlignment="Bottom"/>
+            <TextBox Text="{Binding CurrentPassword, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="1" Height="30" 
+                     VerticalAlignment="Bottom"/>
 
             <Label Content="Confirm New Password" Margin="5" Grid.Row="2" Grid.Column="3"/>
-            <TextBox  x:Name="ConfirmPasswordBox" Grid.Row="2" Grid.Column="3" Height="30" VerticalAlignment="Bottom"/>
+            <TextBox Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="3" Height="30" 
+                     VerticalAlignment="Bottom"/>
 
-            <Button Content="SAVE" Grid.Row="3" Grid.Column="1"  />
-            <Button Content="LOGOUT" Grid.Row="3" Grid.Column="3" />
-            <Button Content="CANCEL" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding StatusMessage}" 
+                       Foreground="{Binding StatusColor}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+            <Button Content="SAVE" Command="{Binding GoToSaveCommand}" Grid.Row="4" Grid.Column="1"  />
+            <Button Content="LOGOUT" Command="{Binding LogoutCommand}" Grid.Row="4" Grid.Column="3" />
+            <Button Content="CANCEL" Command="{Binding GoToMainCommand}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" />
 
         </Grid>
     </Grid>

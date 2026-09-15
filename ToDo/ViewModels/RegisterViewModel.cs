@@ -103,7 +103,7 @@ namespace ToDo.ViewModels
 
         private async Task RegisterAsync()
         {
-            if (!IsValidEmail(Email))
+            if (!_loginService.IsValidEmail(Email))
             {
                 StatusMessage = "Enter a valid email (for example: user@mail.com).";
                 StatusColor = "Red";
@@ -150,15 +150,6 @@ namespace ToDo.ViewModels
 
                 await Task.Delay(1500);
             _navigation.NavigateToLogin();
-        }
-
-        private bool IsValidEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-                return false;
-
-            var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-            return regex.IsMatch(email);
-        }               
+        }         
     }
 }

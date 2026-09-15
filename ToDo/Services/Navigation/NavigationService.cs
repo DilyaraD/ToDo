@@ -34,6 +34,20 @@ namespace ToDo.Services
             CloseOthers(window);
         }
 
+        public void NavigateToProfile()
+        {
+            var window = new SettingWindow();
+            window.Show();
+            CloseOthers(window);
+        }
+
+        public void NavigateToAddTask()
+        {
+            var window = new AddEditTaskWindow();
+            window.Show();
+            CloseOthers(window);
+        }
+
         private static void CloseOthers(Window current)
         {
             foreach (var w in Application.Current.Windows.Cast<Window>().ToList())

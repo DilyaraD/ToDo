@@ -1,7 +1,8 @@
-﻿using System;
+﻿using BCrypt.Net;
+using System;
 using System.Data.Entity;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using BCrypt.Net;
 using ToDo.Data;
 using ToDo.Models;
 
@@ -23,6 +24,14 @@ namespace ToDo.Services
                 return null;
             }
         }
+        public bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+            return regex.IsMatch(email);
+        }
 
         public async Task<string> RegisterAsync(string login, string email, string password)
         {
@@ -43,6 +52,33 @@ namespace ToDo.Services
                 await db.SaveChangesAsync();
                 return null;
             }
+        }
+
+        public async Task<string> ChangePasswordAsync(string currentPassword, string newPassword)
+        {
+            if (CurrentProfile == null)
+                return "You are not logged in.";
+
+            using (var db = new AppDbContext())
+            {
+                var user = await db.Profiles.FirstOrDefaultAsync(u => u.IdProfile == CurrentProfile.IdProfile);
+                if (user == null)
+                    return "User not found.";
+
+                if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.Password))
+                    return "Current password is incorrect.";
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                await db.SaveChangesAsync();
+
+                CurrentProfile = user;
+                return null;
+            }
+        }
+
+        public void Logout()
+        {
+            CurrentProfile = null;
         }
     }
 }
