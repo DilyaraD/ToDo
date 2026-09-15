@@ -12,7 +12,7 @@ namespace ToDo.Infastructure.Commands.Base
         public event EventHandler CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public virtual bool CanExecute(object parameter)
@@ -24,5 +24,6 @@ namespace ToDo.Infastructure.Commands.Base
         {
             throw new NotImplementedException();
         }
+
     }
 }

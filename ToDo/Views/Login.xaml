@@ -32,10 +32,10 @@
                    Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3"/>
 
             <Label Content="Email" Margin="0,5, 5, 5" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"/>
-            <TextBox Text="{Binding Email}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Height="30" VerticalAlignment="Bottom"  />
+            <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Height="30" VerticalAlignment="Bottom"  />
 
             <Label Content="Password" Margin="0,5, 5, 5" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"/>
-            <TextBox Text="{Binding Password}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Height="30" VerticalAlignment="Bottom"/>
+            <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Height="30" VerticalAlignment="Bottom"/>
 
             <TextBlock Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3"
        Text="{Binding StatusMessage}"

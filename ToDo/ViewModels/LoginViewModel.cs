@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using ToDo.Data;
 using ToDo.Infastructure.Commands;
+using ToDo.Services;
 using ToDo.ViewModels.Base;
 using ToDo.Views;
 
@@ -14,43 +15,18 @@ namespace ToDo.ViewModels
 {
     public class LoginViewModel : ViewModel
     {
-
+        private readonly LoginService _loginService = new LoginService();
+        private readonly NavigationService _navigation = new NavigationService();
         public LoginViewModel()
         {
-            GoToRegisterCommand = new LambdaCommand(OnGoToRegisterCommandExecuted);
-            GoToCodeCommand = new LambdaCommand(OnGoToCodeCommandExecuted);
-            LoginCommand = new LambdaCommand(OnLoginCommandExecuted, CanLoginCommandExecute);
+            GoToRegisterCommand = new LambdaCommand(_ => _navigation.NavigateToRegister());
+            GoToCodeCommand = new LambdaCommand(_ => _navigation.NavigateToCode());
+            LoginCommand = new AsyncCommand(LoginAsync, CanLogin);
         }
+
         public ICommand GoToRegisterCommand { get; }
         public ICommand GoToCodeCommand { get; }
         public ICommand LoginCommand { get; }
-        private void OnGoToRegisterCommandExecuted(object p)
-        {
-            var registerWindow = new RegisterWindow();
-            registerWindow.Show();
-
-            foreach (Window w in Application.Current.Windows)
-            {
-                if (w != registerWindow && !(w is MainWindow))
-                {
-                    w.Close();
-                }
-            }
-        }
-
-        private void OnGoToCodeCommandExecuted(object p)
-        {
-            var codeWindow = new CodeWindow();
-            codeWindow.Show();
-
-            foreach (Window w in Application.Current.Windows)
-            {
-                if (w != codeWindow && !(w is MainWindow))
-                {
-                    w.Close();
-                }
-            }
-        }
 
         private string _email;
         public string Email
@@ -80,26 +56,23 @@ namespace ToDo.ViewModels
             set => Set(ref _statusColor, value);
         }
 
-        private bool CanLoginCommandExecute(object p) => !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
+        private bool CanLogin() => !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
 
-        private void OnLoginCommandExecuted(object p)
+        private async Task LoginAsync()
         {
-            using (var db = new AppDbContext())
-            {
-                var user = db.Profiles.FirstOrDefault(u => u.Email == Email);
-                if (user == null || !BCrypt.Net.BCrypt.Verify(Password, user.Password))
-                {
-                    StatusMessage = "Incorrect email or password!";
-                    StatusColor = "Red";
-                    return;
-                }
+            StatusMessage = "Checking...";
+            StatusColor = "Blue";
 
-                CurrentUser.Profile = user;
-                var main = new MainWindow();
-                main.Show();
-                var log = new Login();
-                log.Close();
+            var error = await _loginService.LoginAsync(Email, Password);
+
+            if (error != null)
+            {
+                StatusMessage = error;
+                StatusColor = "Red";
+                return;
             }
+
+            _navigation.NavigateToMain();
         }
     }
 }

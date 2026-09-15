@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using static BCrypt.Net.BCrypt;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,23 +8,29 @@ using System.Windows;
 using System.Windows.Input;
 using ToDo.Data;
 using ToDo.Infastructure.Commands;
-using ToDo.ViewModels.Base;
 using ToDo.Models;
+using ToDo.Services;
+using ToDo.ViewModels.Base;
 using ToDo.Views;
+using static BCrypt.Net.BCrypt;
 
 namespace ToDo.ViewModels
 {
     public class RegisterViewModel : ViewModel
     {
-        private readonly AppDbContext _context;
+        private readonly LoginService _loginService = new LoginService();
+        private readonly NavigationService _navigation = new NavigationService();
         public RegisterViewModel()
         {
-            _context = new AppDbContext();
-            _context.Database.CreateIfNotExists();
-
-            RegisterCommand = new LambdaCommand(OnRegisterCommandExecuted, CanRegisterCommandExecute);
-            GoToLoginCommand = new LambdaCommand(OnGoToLoginCommandExecuted);
+            RegisterCommand = new AsyncCommand(RegisterAsync, CanRegister);
+            GoToLoginCommand = new LambdaCommand(_ => _navigation.NavigateToLogin());
         }
+
+        #region Команды
+        public ICommand RegisterCommand { get; }
+        public ICommand GoToLoginCommand { get; }
+
+        #endregion
 
         private string _email;
         public string Email
@@ -87,13 +92,7 @@ namespace ToDo.ViewModels
             }
         }
 
-        #region Команды
-        public ICommand RegisterCommand { get; }
-        public ICommand GoToLoginCommand { get; }
-
-        #endregion
-
-        private bool CanRegisterCommandExecute(object p)
+        private bool CanRegister()
         {
             return !string.IsNullOrWhiteSpace(Email) &&
                    !string.IsNullOrWhiteSpace(Login) &&
@@ -102,7 +101,7 @@ namespace ToDo.ViewModels
                    !IsLoading;
         }
 
-        private async void OnRegisterCommandExecuted(object p)
+        private async Task RegisterAsync()
         {
             if (!IsValidEmail(Email))
             {
@@ -136,56 +135,21 @@ namespace ToDo.ViewModels
             StatusMessage = "Data verification...";
             StatusColor = "Blue";
 
-            try
+            var error = await _loginService.RegisterAsync(Login, Email, Password);
+
+            if (error != null)
             {
-                var userExistingEmail = _context.Profiles.FirstOrDefault(u => u.Email == Email);
-                if (userExistingEmail != null)
-                {
-                    StatusMessage = "A user with this email address is already registered.";
-                    StatusColor = "Red";
-                    return;
-                }
+                StatusMessage = error;
+                StatusColor = "Red";
+                IsLoading = false;
+                return;
+            }
 
-                var userExistingLogin = _context.Profiles.FirstOrDefault(u => u.Login == Login);
-                if (userExistingLogin != null)
-                {
-                    StatusMessage = "A user with this login has already been registered.";
-                    StatusColor = "Red";
-                    return;
-                }
-
-                StatusMessage = "Account creation...";
-                StatusColor = "Blue";
-
-                var newProfile = new Profile
-                {
-                    Login = Login,
-                    Email = Email,
-                    Password = HashPassword(Password)
-                };
-                _context.Profiles.Add(newProfile);
-                await _context.SaveChangesAsync();
-
-                StatusMessage = "Registration is successful! Now log in to the system.";
-                StatusColor = "Green";
+            StatusMessage = "Registration is successful! Now log in to the system.";
+            StatusColor = "Green";
 
                 await Task.Delay(1500);
-
-                if (p is Window window)
-                {
-                    window.DialogResult = true;
-                    window.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"Error: {ex.Message}";
-                StatusColor = "Red";
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            _navigation.NavigateToLogin();
         }
 
         private bool IsValidEmail(string email)
@@ -195,20 +159,6 @@ namespace ToDo.ViewModels
 
             var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
             return regex.IsMatch(email);
-        }
-
-        private void OnGoToLoginCommandExecuted(object p)
-        {
-            var loginWindow = new Login();
-            loginWindow.Show();
-
-            foreach (Window w in Application.Current.Windows)
-            {
-                if (w != loginWindow && !(w is MainWindow))
-                {
-                    w.Close();
-                }
-            }
-        }
+        }               
     }
 }

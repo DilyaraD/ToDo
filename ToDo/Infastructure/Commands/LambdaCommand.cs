@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using ToDo.Infastructure.Commands.Base;
 
 namespace ToDo.Infastructure.Commands
@@ -19,7 +20,7 @@ namespace ToDo.Infastructure.Commands
 
         public override bool CanExecute(object parameter) => _CanExecute?.Invoke(parameter) ?? true;
 
-        public override void Execute(object parameter) => _Execute(parameter);
+        public override void Execute(object parameter) => _Execute(parameter); 
 
 
     }
