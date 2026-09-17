@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:nm="clr-namespace:ToDo.ViewModels"
         xmlns:local="clr-namespace:ToDo.Views"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="MainWindow" MinHeight="450" MinWidth="800" >
     <Window.DataContext>
         <nm:MainViewModel />
     </Window.DataContext>
@@ -27,7 +27,7 @@
             <TextBlock Grid.Column="0" Text="📋 My tasks" FontSize="24" FontWeight="Bold"/>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button Content="Profile" Margin="0,0,10,0" Command="{Binding GoToProfileCommand}"/>
-                <Button Content="Log out" />
+                <Button Content="Log out" Command="{Binding LogoutCommand}" />
             </StackPanel>
         </Grid>
 
@@ -40,42 +40,50 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBox Grid.Column="0" Text="o" 
+                <TextBox Grid.Column="0" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          Padding="10,8" Margin="0,0,10,0" FontSize="14"/>
 
-                <ComboBox Grid.Column="1" Margin="0,0,10,0" FontSize="14"/>
+                <ComboBox Grid.Column="1" ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" 
+                          Margin="0,0,10,0" FontSize="14"/>
 
-                <ComboBox Grid.Column="2" Margin="0,0,10,0" FontSize="14"/>
+                <ComboBox Grid.Column="2" ItemsSource="{Binding Priorities}" SelectedItem="{Binding SelectedPriority}" 
+                          Margin="0,0,10,0" FontSize="14"/>
 
-                <Button Grid.Column="3" Margin="0,0,10,0" Content="Reset" FontSize="13"/>
+                <Button Grid.Column="3" Margin="0,0,10,0" Content="Reset" Command="{Binding ResetFilterCommand}" FontSize="13"/>
             </Grid>
         </Grid>
 
-        <DataGrid Grid.Row="2" AutoGenerateColumns="False">
+        <DataGrid Grid.Row="2" AutoGenerateColumns="False" ItemsSource="{Binding Tasks}" CanUserAddRows="False"
+                  CanUserDeleteRows="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="✅" Width="50">
+                <DataGridTemplateColumn Header="✅" Width="60">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox HorizontalAlignment="Center"/>
+                            <CheckBox HorizontalAlignment="Left" IsChecked="{Binding IsCompleted, UpdateSourceTrigger=PropertyChanged}"
+                                      Command="{Binding DataContext.GoToUpdateCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                      CommandParameter="{Binding}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Title" Width="*" />
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="*" />
 
-                <DataGridTextColumn Header="Category" Width="120" />
+                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="120" />
 
-                <DataGridTextColumn Header="Property" Width="100" />
+                <DataGridTextColumn Header="Property" Binding="{Binding Property}" Width="100" />
 
-                <DataGridTextColumn Header="DueDate" Width="120" />
+                <DataGridTextColumn Header="DueDate" Binding="{Binding DueDate, StringFormat=dd-MM-yyyy}" Width="120" />
 
                 <DataGridTemplateColumn Header="Action" Width="130">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="✏️" Background="Transparent" BorderThickness="0" FontSize="16" />
-                                <Button Content="🗑️" Background="Transparent" BorderThickness="0" FontSize="16" Margin="5,0" />
-                                <Button Content="📋" Background="Transparent" BorderThickness="0" FontSize="16"/>
+                                <Button Content="✍︎" Background="MediumPurple" BorderThickness="0" FontSize="16" 
+                                        Command="{Binding DataContext.GoToEditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"/>
+                                <Button Content="🗑️" Background="MediumPurple" BorderThickness="0" FontSize="16" Margin="5,0" 
+                                        Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -91,8 +99,8 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="uu" FontSize="13" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding TasksSummary}" FontSize="12" VerticalAlignment="Center" Margin="10"/>
                 </StackPanel>
 
                 <Button Grid.Column="1" Content="Add task" Margin="5" Command="{Binding GoToAddTaskCommand}"/>
