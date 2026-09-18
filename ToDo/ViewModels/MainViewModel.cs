@@ -120,6 +120,8 @@ namespace ToDo.ViewModels
 
             foreach (var t in query)
                 Tasks.Add(t);
+
+            OnPropertyChanged(nameof(TasksSummary));
         }
 
         private void ResetFilter()
@@ -145,9 +147,17 @@ namespace ToDo.ViewModels
         private async Task DeleteTaskAsync(object param)
         {
             if (!(param is UserTask task)) return;
+
+            var result = System.Windows.MessageBox.Show($"Delete task \"{task.Title}\"?", "Confirm",
+                        System.Windows.MessageBoxButton.YesNo,
+                        System.Windows.MessageBoxImage.Question);
+
+            if (result != System.Windows.MessageBoxResult.Yes) return;
+
             await _tasks.DeleteTaskAsync(task.IdTask);
             _allTasks.Remove(task);
             Tasks.Remove(task);
+            OnPropertyChanged(nameof(TasksSummary));
         }
     }
 }

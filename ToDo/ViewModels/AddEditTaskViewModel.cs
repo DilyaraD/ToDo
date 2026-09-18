@@ -18,13 +18,12 @@ namespace ToDo.ViewModels
 {
     public class AddEditTaskViewModel : ViewModel
     {
-        private readonly LoginService _loginService = new LoginService();
         private readonly NavigationService _navigation = new NavigationService();
         private readonly TaskService _tasks = new TaskService();
         public static UserTask TaskToEdit { get; set; }
         public AddEditTaskViewModel()
         {
-            GoToBackCommand = new LambdaCommand(_ => _navigation.NavigateToMain());
+            GoToBackCommand = new LambdaCommand(_ => { TaskToEdit = null; _navigation.NavigateToMain(); });
             GoToSaveCommand = new AsyncCommand(SaveAsync, CanSave);
             if (TaskToEdit != null)
                 LoadFromTask(TaskToEdit);
@@ -111,7 +110,7 @@ namespace ToDo.ViewModels
         private void LoadFromTask(UserTask task)
         {
             Title = task.Title;
-            Category = task.Category;
+            SelectedCategory = task.Category;
             DueDate = task.DueDate;
             SelectedPriority = task.Property == 1 ? "Low"
                              : task.Property == 3 ? "High"

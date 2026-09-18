@@ -101,9 +101,18 @@ namespace ToDo.ViewModels
                    !IsLoading;
         }
 
+        public bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+            return regex.IsMatch(email);
+        }
+
         private async Task RegisterAsync()
         {
-            if (!_loginService.IsValidEmail(Email))
+            if (!IsValidEmail(Email))
             {
                 StatusMessage = "Enter a valid email (for example: user@mail.com).";
                 StatusColor = "Red";

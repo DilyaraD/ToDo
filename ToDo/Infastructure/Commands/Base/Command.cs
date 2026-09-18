@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace ToDo.Infastructure.Commands.Base
 {
-    internal class Command : ICommand
+    public class Command : ICommand
     {
         public event EventHandler CanExecuteChanged
         {

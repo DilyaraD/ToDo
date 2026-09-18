@@ -24,14 +24,6 @@ namespace ToDo.Services
                 return null;
             }
         }
-        public bool IsValidEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-                return false;
-
-            var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-            return regex.IsMatch(email);
-        }
 
         public async Task<string> RegisterAsync(string login, string email, string password)
         {
@@ -79,6 +71,23 @@ namespace ToDo.Services
         public void Logout()
         {
             CurrentProfile = null;
+        }
+
+        public async Task<string> ResetPasswordAsync(string email, string code, string newPassword)
+        {
+            if (code != "1234")
+                return "Invalid code.";
+
+            using (var db = new AppDbContext())
+            {
+                var user = await db.Profiles.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return "User with this email not found.";
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                await db.SaveChangesAsync();
+                return null;
+            }
         }
     }
 }
