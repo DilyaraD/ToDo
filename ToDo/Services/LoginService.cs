@@ -11,6 +11,10 @@ namespace ToDo.Services
     public class LoginService
     {
         public static Profile CurrentProfile { get; set; }
+        private static string _testEmail;
+        private static string _testCode;
+        private static DateTime _codeTime;
+        private readonly EmailService _emailService = new EmailService();
 
         public async Task<string> LoginAsync(string email, string password)
         {
@@ -73,19 +77,53 @@ namespace ToDo.Services
             CurrentProfile = null;
         }
 
+        public async Task<string> SendResetCodeAsync(string email)
+        {
+            using (var db = new AppDbContext())
+            {
+                var user = await db.Profiles.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return "No user with such an email address was found.";
+
+                var rnd = new Random();
+                _testCode = rnd.Next(100000, 999999).ToString();
+                _testEmail = email;
+                _codeTime = DateTime.Now.AddMinutes(5);
+
+                try
+                {
+                    await _emailService.SendCodeAsync(email, _testCode);
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    return $"The email could not be sent: {ex.Message}";
+                }
+            }
+        }
+
         public async Task<string> ResetPasswordAsync(string email, string code, string newPassword)
         {
-            if (code != "1234")
+            if (_testEmail != email)
+                return "First, request the code for this email.";
+
+            if (DateTime.Now > _codeTime)
+                return "The code has expired. Request a new one.";
+
+            if (_testCode != code)
                 return "Invalid code.";
 
             using (var db = new AppDbContext())
             {
                 var user = await db.Profiles.FirstOrDefaultAsync(u => u.Email == email);
                 if (user == null)
-                    return "User with this email not found.";
+                    return "The user was not found.";
 
                 user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
                 await db.SaveChangesAsync();
+
+                _testEmail = null;
+                _testCode = null;
                 return null;
             }
         }

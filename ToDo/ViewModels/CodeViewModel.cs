@@ -83,16 +83,15 @@ namespace ToDo.ViewModels
             StatusMessage = "Sending code...";
             StatusColor = "Blue";
 
-            await Task.Delay(500);
-
-            if (!IsValidEmail(Email))
+            var error = await _loginService.SendResetCodeAsync(Email);
+            if (error != null)
             {
-                StatusMessage = "Enter a valid email.";
+                StatusMessage = error;
                 StatusColor = "Red";
                 return;
             }
 
-            StatusMessage = "Code sent! Check your email (test code: 1234).";
+            StatusMessage = "Code sent! Check your email.";
             StatusColor = "Green";
 
             IsCodeSent = true;
@@ -128,7 +127,7 @@ namespace ToDo.ViewModels
             StatusMessage = "Password reset! Now log in.";
             StatusColor = "Green";
 
-            await Task.Delay(1000);
+            await Task.Delay(1500);
             _navigation.NavigateToLogin();
         }
     }
