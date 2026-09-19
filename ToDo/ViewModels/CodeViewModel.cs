@@ -64,16 +64,7 @@ namespace ToDo.ViewModels
             => !string.IsNullOrWhiteSpace(Code)
             && !string.IsNullOrWhiteSpace(NewPassword)
             && !string.IsNullOrWhiteSpace(ConfirmPassword);
-
-        public bool IsValidEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email))
-                return false;
-
-            var regex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-            return regex.IsMatch(email);
-        }
-
+                
         private async Task SendCodeAsync()
         {
             StatusMessage = "Sending code...";
