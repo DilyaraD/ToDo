@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
-using ToDo.Data;
 using ToDo.Infastructure.Commands;
 using ToDo.Services;
 using ToDo.ViewModels.Base;
-using ToDo.Views;
 
 namespace ToDo.ViewModels
 {

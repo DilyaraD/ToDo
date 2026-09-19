@@ -1,7 +1,6 @@
-﻿using BCrypt.Net;
-using System;
+﻿using System;
 using System.Data.Entity;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Threading.Tasks;
 using ToDo.Data;
 using ToDo.Models;
@@ -75,6 +74,31 @@ namespace ToDo.Services
         public void Logout()
         {
             CurrentProfile = null;
+        }
+
+        public async Task<string> DeleteAccountAsync(string password)
+        {
+            if (CurrentProfile == null)
+                return "You are not logged in.";
+
+            using (var db = new AppDbContext())
+            {
+                var user = await db.Profiles.FirstOrDefaultAsync(u => u.IdProfile == CurrentProfile.IdProfile);
+                if (user == null)
+                    return "User not found.";
+
+                if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+                    return "Incorrect password.";
+
+                var tasks = db.UserTasks.Where(t => t.ProfileId == user.IdProfile);
+                db.UserTasks.RemoveRange(tasks);
+
+                db.Profiles.Remove(user);
+                await db.SaveChangesAsync();
+
+                CurrentProfile = null;
+                return null;
+            }
         }
 
         public async Task<string> SendResetCodeAsync(string email)

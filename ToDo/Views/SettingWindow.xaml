@@ -50,7 +50,7 @@
                        Foreground="{Binding StatusColor}" HorizontalAlignment="Center" VerticalAlignment="Center" />
 
             <Button Content="SAVE" Command="{Binding GoToSaveCommand}" Grid.Row="4" Grid.Column="1"  />
-            <Button Content="LOGOUT" Command="{Binding LogoutCommand}" Grid.Row="4" Grid.Column="3" />
+            <Button Content="DELETE ACCOUNT" Command="{Binding DeleteAccountCommand}" Grid.Row="4" Grid.Column="3" />
             <Button Content="CANCEL" Command="{Binding GoToMainCommand}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" />
 
         </Grid>

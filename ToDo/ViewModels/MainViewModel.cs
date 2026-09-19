@@ -85,16 +85,7 @@ namespace ToDo.ViewModels
 
             _allTasks.Clear();
             _allTasks.AddRange(list);
-
-            Categories.Clear();
-            foreach (var c in _allTasks
-                        .Select(t => t.Category)
-                        .Where(c => !string.IsNullOrWhiteSpace(c))
-                        .Distinct())
-            {
-                Categories.Add(c);
-            }
-
+                        
             ApplyFilter();
         }
         private void ApplyFilter()

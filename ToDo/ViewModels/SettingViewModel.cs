@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
-using ToDo.Data;
+using System.Windows;
 using ToDo.Infastructure.Commands;
 using ToDo.Services;
 using ToDo.ViewModels.Base;
-using ToDo.Views;
 
 namespace ToDo.ViewModels
 {
@@ -20,11 +15,11 @@ namespace ToDo.ViewModels
         {
             GoToMainCommand = new LambdaCommand(_ => _navigation.NavigateToMain());
             GoToSaveCommand = new AsyncCommand(SaveAsync, CanSave);
-            LogoutCommand = new LambdaCommand(_ => Logout());
+            DeleteAccountCommand = new AsyncCommand(DeleteAccount, CanDeleteAccount);
         }
         public ICommand GoToMainCommand { get; }
         public ICommand GoToSaveCommand { get; }
-        public ICommand LogoutCommand { get; }
+        public ICommand DeleteAccountCommand { get; }
 
         public string Login => LoginService.CurrentProfile?.Login ?? "—";
 
@@ -42,10 +37,28 @@ namespace ToDo.ViewModels
 
         private string _statusColor = "Red";
         public string StatusColor { get => _statusColor; set => Set(ref _statusColor, value); }
-
-        private void Logout()
+        private bool CanDeleteAccount() => !string.IsNullOrWhiteSpace(CurrentPassword);
+        private async Task DeleteAccount()
         {
-            _loginService.Logout();
+            var confirm1 = MessageBox.Show(
+                "Are you sure you want to delete your account?",
+                "Delete account",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (confirm1 != MessageBoxResult.Yes) return;
+
+            StatusMessage = "Deleting...";
+            StatusColor = "Blue";
+
+            var error = await _loginService.DeleteAccountAsync(CurrentPassword);
+            if (error != null)
+            {
+                StatusMessage = error;
+                StatusColor = "Red";
+                return;
+            }
+
             _navigation.NavigateToLogin();
         }
 
